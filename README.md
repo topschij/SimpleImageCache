@@ -1,9 +1,3 @@
-//
-//  README.md
-//  SimpleImageCache
-//
-//  Created by Michael Topschij on 17/06/2025.
-//
 
 # SimpleImageCache
 
