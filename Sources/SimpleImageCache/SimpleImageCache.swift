@@ -12,19 +12,14 @@ import Foundation
 
 /// For images that should never change
 public func cachedImage(url: URL, completion: @escaping (UIImage) -> Void) {
-    print("---- CACHED IMAGE: \(url) ----")
     
     // Memory cache
     if let img = SimpleImageCache.memory.object(forKey: url as NSURL) {
-        print("---- CACHED IMAGE: IN MEMORY ----")
         completion(img)
     } else if let img = SimpleImageCache.loadFromDisk(url: url) { // Disk cache
-        print("---- CACHED IMAGE: LOADED FROM DISK ----")
         SimpleImageCache.memory.setObject(img, forKey: url as NSURL)
         completion(img)
     } else {
-        print("---- CACHED IMAGE: LOADING... ----")
-        
         // Download if not cached
         loadImageFromURL(url: url) { image in
             completion(image)
@@ -36,26 +31,21 @@ public func cachedImage(url: URL, completion: @escaping (UIImage) -> Void) {
 public func cachedAndReloadImage(url: URL, completion: @escaping (UIImage) -> Void) {
     // Memory cache
     if let img = SimpleImageCache.memory.object(forKey: url as NSURL) {
-        print("---- CACHED IMAGE: IN MEMORY ----")
         completion(img)
     } else if let img = SimpleImageCache.loadFromDisk(url: url) { // Disk cache
-        print("---- CACHED IMAGE: LOADED FROM DISK ----")
         SimpleImageCache.memory.setObject(img, forKey: url as NSURL)
         completion(img)
     }
     
     loadImageFromURL(url: url) { image in
-        print("---- CACHED IMAGE: RELOADED ----")
         completion(image)
     }
 }
 
 public func loadImageFromURL(url: URL, completion: @escaping (UIImage) -> Void) {
     URLSession.shared.dataTask(with: url) { data, _, _ in
-        print("---- CACHED IMAGE: GOT DATA ----")
         
         guard let data, let img = UIImage(data: data) else {
-            print("---- CACHED IMAGE: FAILED DATA ----")
             return
         }
         
@@ -63,7 +53,6 @@ public func loadImageFromURL(url: URL, completion: @escaping (UIImage) -> Void) 
         SimpleImageCache.saveToDisk(img, url: url)
         
         DispatchQueue.main.async {
-            print("---- CACHED IMAGE: LOADED & RETURNED ----")
             completion(img)
         }
     }.resume()
